@@ -2,8 +2,6 @@
 
 A modern Customer Relationship Management (CRM) dashboard built with React, TypeScript, and ShadcnUI. This application provides a comprehensive interface for managing customers, leads, sales, and business analytics.
 
-![CRM Dashboard](public/images/crm.png)
-
 ## Features
 
 - **Customer Management** - Add, edit, and track customer information
