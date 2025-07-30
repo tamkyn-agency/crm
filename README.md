@@ -1,79 +1,76 @@
-# Shadcn Admin Dashboard
+# CRM Dashboard
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+A modern Customer Relationship Management (CRM) dashboard built with React, TypeScript, and ShadcnUI. This application provides a comprehensive interface for managing customers, leads, sales, and business analytics.
 
-![alt text](public/images/crm.png)
-
-I've been creating dashboard UIs at work and for my personal projects. I always wanted to make a reusable collection of dashboard UI for future projects; and here it is now. While I've created a few custom components, some of the code is directly adapted from ShadcnUI examples.
-
-> This is not a starter project (template) though. I'll probably make one in the future.
+![CRM Dashboard](public/images/crm.png)
 
 ## Features
 
-- Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
-- Global Search Command
-- 10+ pages
-- Extra custom components
+- **Customer Management** - Add, edit, and track customer information
+- **Lead Tracking** - Monitor and manage sales leads through the pipeline
+- **Sales Analytics** - Visualize sales data with interactive charts and reports
+- **Task Management** - Create and track follow-up tasks and activities
+- **Contact Management** - Organize and search through contact databases
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
+- **Dark/Light Mode** - Toggle between themes for better user experience
+- **Global Search** - Quickly find customers, leads, or any data across the system
+- **Role-based Access** - Different permission levels for team members
 
 ## Tech Stack
 
-**UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
+**Frontend:** React 18 + TypeScript + Vite
+**UI Framework:** ShadcnUI (TailwindCSS + RadixUI)
+**Routing:** TanStack Router
+**State Management:** React Query + Zustand
+**Charts:** Recharts
+**Authentication:** Clerk
+**Icons:** Tabler Icons
+**Linting:** ESLint + Prettier
 
-**Build Tool:** [Vite](https://vitejs.dev/)
+## Getting Started
 
-**Routing:** [TanStack Router](https://tanstack.com/router/latest)
+### Prerequisites
 
-**Type Checking:** [TypeScript](https://www.typescriptlang.org/)
+- Node.js 18+
+- pnpm (recommended) or npm
 
-**Linting/Formatting:** [Eslint](https://eslint.org/) & [Prettier](https://prettier.io/)
+### Installation
 
-**Icons:** [Tabler Icons](https://tabler.io/icons)
-
-**Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/satnaing/crm.git
-```
-
-Go to the project directory
+1. Clone the repository
 
 ```bash
-  cd crm
+git clone https://github.com/tamkyn-agency/crm
+cd crm
 ```
 
-Install dependencies
+2. Install dependencies
 
 ```bash
-  pnpm install
+bun install
 ```
 
-Start the server
+3. Set up environment variables
 
 ```bash
-  pnpm run dev
+cp .env.example .env.local
 ```
 
-## Sponsoring this project ❤️
+Edit `.env.local` and add your configuration values.
 
-If you find this project helpful or use this in your own work, consider [sponsoring me](https://github.com/sponsors/satnaing) to support development and maintenance. You can [buy me a coffee](https://buymeacoffee.com/satnaing) as well. Don’t worry, every penny helps. Thank you! 🙏
+4. Start the development server
 
-For questions or sponsorship inquiries, feel free to reach out at [contact@satnaing.dev](mailto:contact@satnaing.dev).
+```bash
+bun dev
+```
 
-### Current Sponsor
+The application will be available at `http://localhost:5173`
 
-- [Clerk](https://go.clerk.com/GttUAaK) - for backing the implementation of Clerk in this project
+### Build for Production
 
-## Author
-
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
+```bash
+bun build
+```
 
 ## License
 
-Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
