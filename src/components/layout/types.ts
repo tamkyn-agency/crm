@@ -31,7 +31,7 @@ type NavCollapsible = BaseNavItem & {
 type NavItem = NavCollapsible | NavLink
 
 interface NavGroup {
-  title: string
+  title?: string
   items: NavItem[]
 }
 
@@ -41,4 +41,4 @@ interface SidebarData {
   navGroups: NavGroup[]
 }
 
-export type { SidebarData, NavGroup, NavItem, NavCollapsible, NavLink }
+export type { NavCollapsible, NavGroup, NavItem, NavLink, SidebarData }
