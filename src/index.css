@@ -12,6 +12,7 @@
   --popover-foreground: oklch(0.4386 0 0);
   --primary: oklch(0.8348 0.1302 160.908);
   --primary-foreground: hsla(0, 0%, 100%, 1);
+  --primary-light: hsla(167, 85%, 89%, 0.42);
   --secondary: oklch(0.994 0 0);
   --secondary-foreground: oklch(0.2046 0 0);
   --muted: oklch(0.9461 0 0);
@@ -36,7 +37,7 @@
   --sidebar-accent-foreground: oklch(0.2435 0 0);
   --sidebar-border: oklch(0.9037 0 0);
   --sidebar-ring: oklch(0.8348 0.1302 160.908);
-  --font-sans: Outfit, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono: monospace;
   --radius: 0.5rem;
@@ -66,6 +67,7 @@
   --popover-foreground: oklch(0.7348 0 0);
   --primary: hsla(173, 80%, 40%, 1);
   --primary-foreground: oklch(0.9213 0.0135 167.1556);
+  --primary-light: hsla(167, 85%, 89%, 0.42);
   --secondary: oklch(0.2603 0 0);
   --secondary-foreground: oklch(0.9851 0 0);
   --muted: oklch(0.2393 0 0);
@@ -90,7 +92,7 @@
   --sidebar-accent-foreground: oklch(0.9851 0 0);
   --sidebar-border: oklch(0.2809 0 0);
   --sidebar-ring: oklch(0.8003 0.1821 151.711);
-  --font-sans: Outfit, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono: monospace;
   --radius: 0.5rem;
@@ -118,6 +120,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-light: var(--primary-light);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -142,6 +145,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-slate-900: hsla(229, 84%, 5%, 1);
+  --color-slate-600: hsla(215, 25%, 27%, 1);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -198,6 +204,16 @@ body {
     textarea {
       font-size: 16px !important;
     }
+  }
+}
+
+/* Font utilities for the font switcher (Tailwind v4 custom layer) */
+@layer utilities {
+  .font-jakarta {
+    font-family: var(--font-sans);
+  }
+  .font-system {
+    font-family: ui-sans-serif, system-ui, sans-serif;
   }
 }
 
