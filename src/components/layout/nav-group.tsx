@@ -64,6 +64,7 @@ const SidebarMenuLink = ({ item, href }: { item: NavLink; href: string }) => {
       <SidebarMenuButton
         asChild
         isActive={checkIsActive(href, item)}
+        className='data-[active=true]:bg-primary-light font-semibold data-[active=true]:font-semibold data-[active=true]:text-slate-600 data-[active=true]:[&>svg]:text-slate-600'
         tooltip={item.title}
       >
         <Link to={item.url} onClick={() => setOpenMobile(false)}>
@@ -92,7 +93,11 @@ const SidebarMenuCollapsible = ({
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton tooltip={item.title}>
+          <SidebarMenuButton
+            isActive={checkIsActive(href, item)}
+            className='data-[active=true]:bg-green-100 data-[active=true]:text-green-200 data-[active=true]:[&>svg]:text-green-300'
+            tooltip={item.title}
+          >
             {item.icon && <item.icon />}
             <span>{item.title}</span>
             {item.badge && <NavBadge>{item.badge}</NavBadge>}
@@ -136,6 +141,7 @@ const SidebarMenuCollapsedDropdown = ({
           <SidebarMenuButton
             tooltip={item.title}
             isActive={checkIsActive(href, item)}
+            className='data-[active=true]:bg-green-100 data-[active=true]:text-green-200 data-[active=true]:[&>svg]:text-green-300'
           >
             {item.icon && <item.icon />}
             <span>{item.title}</span>
