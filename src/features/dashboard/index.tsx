@@ -1,6 +1,10 @@
+import type { ComponentType, SVGProps } from 'react'
+import { useMemo, useState } from 'react'
 import {
   ChartNoAxesCombined,
   FileText,
+  MoreHorizontal,
+  Move,
   Plus,
   UserRoundCheck,
   Users,
@@ -13,6 +17,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -22,7 +34,25 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { Overview } from './components/overview'
 import { RecentSales } from './components/recent-sales'
 
+type MetricId = 'total-leads' | 'clients' | 'quotes-created' | 'conversion-rate'
+
 export default function Dashboard() {
+  const [visible, setVisible] = useState<Record<MetricId, boolean>>({
+    'total-leads': true,
+    clients: true,
+    'quotes-created': true,
+    'conversion-rate': true,
+  })
+  const [stretch, setStretch] = useState(false)
+
+  const metricsOrder: MetricId[] = useMemo(
+    () => ['total-leads', 'clients', 'quotes-created', 'conversion-rate'],
+    []
+  )
+
+  const toggleMetric = (id: MetricId, checked: boolean | 'indeterminate') => {
+    setVisible((v) => ({ ...v, [id]: Boolean(checked) }))
+  }
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -36,7 +66,7 @@ export default function Dashboard() {
 
       {/* ===== Main ===== */}
       <Main>
-        <div className='mb-2 flex items-center justify-between space-y-2'>
+        <div className='flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Table de bord</h1>
           <div className='flex items-center space-x-2'>
             <Button>
@@ -45,6 +75,40 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
+        <div className='flex items-center justify-end'>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' size='icon' aria-label='Customize stats'>
+                <MoreHorizontal className='size-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end' className='-mt-1 min-w-56'>
+              <DropdownMenuLabel>Stat cards</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {metricsOrder.map((id) => (
+                <DropdownMenuCheckboxItem
+                  key={id}
+                  checked={visible[id]}
+                  onCheckedChange={(c) => toggleMetric(id, c)}
+                  className='justify-between pr-2'
+                >
+                  <span className='flex items-center gap-2'>
+                    <Move className='text-muted-foreground size-3.5' />
+                    {labelFor(id)}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={stretch}
+                onCheckedChange={(c) => setStretch(Boolean(c))}
+              >
+                Stretch cards
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
         <Tabs
           orientation='vertical'
           defaultValue='overview'
@@ -65,61 +129,19 @@ export default function Dashboard() {
             </TabsList>
           </div> */}
           <TabsContent value='overview' className='space-y-4'>
-            <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    Total leads
-                  </CardTitle>
-                  <Users className='text-muted-foreground h-4 w-4' />
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>$45,231.89</div>
-                  <p className='text-muted-foreground text-xs'>
-                    +20.1% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Clients</CardTitle>
-                  <UserRoundCheck className='text-muted-foreground h-4 w-4' />
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>+2350</div>
-                  <p className='text-muted-foreground text-xs'>
-                    +180.1% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    Devis créé
-                  </CardTitle>
-                  <FileText className='text-muted-foreground h-4 w-4' />
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>+12,234</div>
-                  <p className='text-muted-foreground text-xs'>
-                    +19% from last month
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>
-                    Taux de conversion
-                  </CardTitle>
-                  <ChartNoAxesCombined className='text-muted-foreground h-4 w-4' />
-                </CardHeader>
-                <CardContent>
-                  <div className='text-2xl font-bold'>+573</div>
-                  <p className='text-muted-foreground text-xs'>
-                    +201 since last hour
-                  </p>
-                </CardContent>
-              </Card>
+            <div
+              className={
+                'grid gap-4 ' +
+                (stretch
+                  ? 'grid-cols-1 md:grid-cols-2'
+                  : 'sm:grid-cols-2 lg:grid-cols-4')
+              }
+            >
+              {metricsOrder
+                .filter((m) => visible[m])
+                .map((m) => (
+                  <StatCard key={m} id={m} />
+                ))}
             </div>
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
               <Card className='col-span-1 lg:col-span-4'>
@@ -146,5 +168,65 @@ export default function Dashboard() {
         </Tabs>
       </Main>
     </>
+  )
+}
+
+function labelFor(id: MetricId) {
+  switch (id) {
+    case 'total-leads':
+      return 'Total leads'
+    case 'clients':
+      return 'Clients'
+    case 'quotes-created':
+      return 'Devis créé'
+    case 'conversion-rate':
+      return 'Taux de conversion'
+  }
+}
+
+function StatCard({ id }: { id: MetricId }) {
+  let title: string
+  let Icon: ComponentType<SVGProps<SVGSVGElement>>
+  let value: string
+  let subtitle: string
+
+  switch (id) {
+    case 'total-leads':
+      title = 'Total leads'
+      Icon = Users
+      value = '$45,231.89'
+      subtitle = '+20.1% from last month'
+      break
+    case 'clients':
+      title = 'Clients'
+      Icon = UserRoundCheck
+      value = '+2350'
+      subtitle = '+180.1% from last month'
+      break
+    case 'quotes-created':
+      title = 'Devis créé'
+      Icon = FileText
+      value = '+12,234'
+      subtitle = '+19% from last month'
+      break
+    case 'conversion-rate':
+      title = 'Taux de conversion'
+      Icon = ChartNoAxesCombined
+      value = '+573'
+      subtitle = '+201 since last hour'
+      break
+  }
+
+  return (
+    <Card>
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+        <CardTitle className='text-sm font-medium'>{title}</CardTitle>
+        <Icon className='text-muted-foreground h-4 w-4' />
+      </CardHeader>
+      <CardContent>
+        <div className='text-2xl font-bold'>{value}</div>
+        <p className='text-muted-foreground text-xs'>{subtitle}</p>
+      </CardContent>
+    </Card>
   )
 }
