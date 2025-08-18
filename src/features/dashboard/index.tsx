@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   ChartNoAxesCombined,
   FileText,
@@ -43,7 +43,12 @@ export default function Dashboard() {
     'quotes-created': true,
     'conversion-rate': true,
   })
-  const [stretch, setStretch] = useState(false)
+  const [spans, setSpans] = useState<Record<MetricId, 1 | 2>>({
+    'total-leads': 1,
+    clients: 1,
+    'quotes-created': 1,
+    'conversion-rate': 1,
+  })
 
   const metricsOrder: MetricId[] = useMemo(
     () => ['total-leads', 'clients', 'quotes-created', 'conversion-rate'],
@@ -53,6 +58,8 @@ export default function Dashboard() {
   const toggleMetric = (id: MetricId, checked: boolean | 'indeterminate') => {
     setVisible((v) => ({ ...v, [id]: Boolean(checked) }))
   }
+  const setSpan = (id: MetricId, value: 1 | 2) =>
+    setSpans((s) => ({ ...s, [id]: value }))
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -98,13 +105,6 @@ export default function Dashboard() {
                   </span>
                 </DropdownMenuCheckboxItem>
               ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={stretch}
-                onCheckedChange={(c) => setStretch(Boolean(c))}
-              >
-                Stretch cards
-              </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -129,18 +129,16 @@ export default function Dashboard() {
             </TabsList>
           </div> */}
           <TabsContent value='overview' className='space-y-4'>
-            <div
-              className={
-                'grid gap-4 ' +
-                (stretch
-                  ? 'grid-cols-1 md:grid-cols-2'
-                  : 'sm:grid-cols-2 lg:grid-cols-4')
-              }
-            >
+            <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
               {metricsOrder
                 .filter((m) => visible[m])
                 .map((m) => (
-                  <StatCard key={m} id={m} />
+                  <StatCard
+                    key={m}
+                    id={m}
+                    span={spans[m]}
+                    onResize={(v: 1 | 2) => setSpan(m, v)}
+                  />
                 ))}
             </div>
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
@@ -184,7 +182,15 @@ function labelFor(id: MetricId) {
   }
 }
 
-function StatCard({ id }: { id: MetricId }) {
+function StatCard({
+  id,
+  span,
+  onResize,
+}: {
+  id: MetricId
+  span: 1 | 2
+  onResize: (v: 1 | 2) => void
+}) {
   let title: string
   let Icon: ComponentType<SVGProps<SVGSVGElement>>
   let value: string
@@ -217,8 +223,28 @@ function StatCard({ id }: { id: MetricId }) {
       break
   }
 
+  const startXRef = useRef<number>(0)
+  const startSpanRef = useRef<1 | 2>(span)
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    startXRef.current = e.clientX
+    startSpanRef.current = span
+
+    const handleMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - startXRef.current
+      if (dx > 24 && startSpanRef.current !== 2) onResize(2)
+      if (dx < -24 && startSpanRef.current !== 1) onResize(1)
+    }
+    const handleUp = () => {
+      window.removeEventListener('pointermove', handleMove)
+      window.removeEventListener('pointerup', handleUp)
+    }
+    window.addEventListener('pointermove', handleMove)
+    window.addEventListener('pointerup', handleUp, { once: true })
+  }
+
   return (
-    <Card>
+    <Card className={`relative ${span === 2 ? 'sm:col-span-2 lg:col-span-2' : ''}`}>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
         <CardTitle className='text-sm font-medium'>{title}</CardTitle>
         <Icon className='text-muted-foreground h-4 w-4' />
@@ -227,6 +253,12 @@ function StatCard({ id }: { id: MetricId }) {
         <div className='text-2xl font-bold'>{value}</div>
         <p className='text-muted-foreground text-xs'>{subtitle}</p>
       </CardContent>
+      {/* Right-edge resize handle */}
+      <div
+        onPointerDown={onPointerDown}
+        title='Drag to resize'
+        className='absolute right-0 top-0 h-full w-2 cursor-ew-resize rounded-r-md hover:bg-border/40'
+      />
     </Card>
   )
 }
