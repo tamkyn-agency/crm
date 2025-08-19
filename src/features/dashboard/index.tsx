@@ -244,7 +244,9 @@ function StatCard({
   }
 
   return (
-    <Card className={`relative ${span === 2 ? 'sm:col-span-2 lg:col-span-2' : ''}`}>
+    <Card
+      className={`relative ${span === 2 ? 'sm:col-span-2 lg:col-span-2' : ''}`}
+    >
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
         <CardTitle className='text-sm font-medium'>{title}</CardTitle>
         <Icon className='text-muted-foreground h-4 w-4' />
@@ -257,7 +259,7 @@ function StatCard({
       <div
         onPointerDown={onPointerDown}
         title='Drag to resize'
-        className='absolute right-0 top-0 h-full w-2 cursor-ew-resize rounded-r-md hover:bg-border/40'
+        className='hover:bg-border/40 absolute top-0 right-0 h-full w-2 cursor-ew-resize rounded-r-md'
       />
     </Card>
   )
