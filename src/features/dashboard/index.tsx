@@ -35,6 +35,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
+import { Link } from '@tanstack/react-router'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
@@ -166,8 +167,8 @@ export default function Dashboard() {
               <Card className='col-span-1 lg:col-span-3 lg:-mt-28'>
                 <CardHeader className='flex flex-row items-center justify-between'>
                   <CardTitle>Activité récente</CardTitle>
-                  <Button variant='outline' size='sm'>
-                    View all
+                  <Button asChild variant='outline' size='sm'>
+                    <Link to='/recent-activities'>View all</Link>
                   </Button>
                 </CardHeader>
                 <CardContent>
