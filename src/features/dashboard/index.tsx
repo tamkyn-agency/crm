@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react'
 import { PdfIcon } from '@/icons/PdfIcon'
 import {
   ChartNoAxesCombined,
+  ChevronDown,
   Download,
   FileText,
   MoreHorizontal,
@@ -18,7 +19,10 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
@@ -395,21 +399,96 @@ function LeadsClientsTable() {
     phone: '0687945635\n0687945635',
     created: 'Jul 13, 2023',
   }))
+
+  // Filters state
+  const [catFilter, setCatFilter] = useState<'all' | string>('all')
+  const statusOptions = [
+    { value: 'LEAD', label: 'lead' },
+    { value: 'SIGNE', label: 'signe' },
+    { value: 'A CONTACT', label: 'A contact' },
+    { value: 'MORE', label: 'more' },
+  ] as const
+  type Status = (typeof statusOptions)[number]['value']
+  const [statusFilter, setStatusFilter] = useState<Status>('LEAD')
+
+  const categories = Array.from(new Set(rows.map((r) => r.category)))
+
+  const filteredRows = rows.filter(
+    (r) =>
+      (catFilter === 'all' || r.category === catFilter) &&
+      r.status.toUpperCase() === statusFilter
+  )
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>N de dossier</TableHead>
-          <TableHead>Catégorie</TableHead>
+          <TableHead>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type='button'
+                  className='hover:text-foreground/80 inline-flex items-center gap-1 font-semibold'
+                >
+                  Catégorie
+                  <ChevronDown className='size-3.5' />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start' className='min-w-48'>
+                <DropdownMenuLabel>Filtrer par catégorie</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={catFilter}
+                  onValueChange={(v: string) => setCatFilter(v)}
+                >
+                  <DropdownMenuRadioItem value='all'>
+                    Toutes
+                  </DropdownMenuRadioItem>
+                  {categories.map((c) => (
+                    <DropdownMenuRadioItem key={c} value={c}>
+                      {c}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableHead>
           <TableHead>Nom et Prénom</TableHead>
-          <TableHead>Etat</TableHead>
+          <TableHead>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type='button'
+                  className='hover:text-foreground/80 inline-flex items-center gap-1 font-semibold'
+                >
+                  Etat
+                  <ChevronDown className='size-3.5' />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start' className='min-w-40'>
+                {statusOptions.map((opt) => (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => setStatusFilter(opt.value)}
+                    className={`mx-1 rounded-md px-3 py-1 text-base ${
+                      statusFilter === opt.value
+                        ? 'bg-emerald-600 font-semibold text-white'
+                        : 'text-muted-foreground'
+                    }`}
+                  >
+                    {opt.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TableHead>
           <TableHead>Département / Province</TableHead>
           <TableHead>Téléphone / fixe</TableHead>
           <TableHead>Date de création</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((r, idx) => (
+        {filteredRows.map((r, idx) => (
           <TableRow key={`${r.id}-${idx}`}>
             <TableCell>{r.id}</TableCell>
             <TableCell className='min-w-48'>{r.category}</TableCell>
