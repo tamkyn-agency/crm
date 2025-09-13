@@ -1,5 +1,6 @@
 import type { ComponentType, SVGProps } from 'react'
 import { useMemo, useRef, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { PdfIcon } from '@/icons/PdfIcon'
 import {
   ChartNoAxesCombined,
@@ -35,7 +36,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
-import { Link } from '@tanstack/react-router'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
