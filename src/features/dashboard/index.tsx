@@ -1,7 +1,9 @@
 import type { ComponentType, SVGProps } from 'react'
 import { useMemo, useRef, useState } from 'react'
+import { PdfIcon } from '@/icons/PdfIcon'
 import {
   ChartNoAxesCombined,
+  Download,
   FileText,
   MoreHorizontal,
   Move,
@@ -9,14 +11,9 @@ import {
   UserRoundCheck,
   Users,
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,14 +22,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { Overview } from './components/overview'
-import { RecentSales } from './components/recent-sales'
 
 type MetricId = 'total-leads' | 'clients' | 'quotes-created' | 'conversion-rate'
 
@@ -141,24 +144,30 @@ export default function Dashboard() {
                   />
                 ))}
             </div>
-            <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-              <Card className='col-span-1 lg:col-span-4'>
+            <div className='grid grid-cols-1 gap-x-4 lg:auto-rows-min lg:grid-cols-7 lg:gap-y-0'>
+              {/* Left top: Action cards take same width as activity section */}
+              <div className='col-span-1 lg:col-span-3 lg:h-fit'>
+                <ActionCards />
+              </div>
+              {/* Right: Leads table starts at top and fills remaining width */}
+              <Card className='col-span-1 lg:col-span-4 lg:col-start-4 lg:row-span-2'>
                 <CardHeader>
-                  <CardTitle>Overview</CardTitle>
-                </CardHeader>
-                <CardContent className='pl-2'>
-                  <Overview />
-                </CardContent>
-              </Card>
-              <Card className='col-span-1 lg:col-span-3'>
-                <CardHeader>
-                  <CardTitle>Recent Sales</CardTitle>
-                  <CardDescription>
-                    You made 265 sales this month.
-                  </CardDescription>
+                  <CardTitle>Leads & Client</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RecentSales />
+                  <LeadsClientsTable />
+                </CardContent>
+              </Card>
+              {/* Left bottom: Recent activity */}
+              <Card className='col-span-1 lg:col-span-3 lg:-mt-28'>
+                <CardHeader className='flex flex-row items-center justify-between'>
+                  <CardTitle>Activité récente</CardTitle>
+                  <Button variant='outline' size='sm'>
+                    View all
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <RecentActivityTable />
                 </CardContent>
               </Card>
             </div>
@@ -262,5 +271,166 @@ function StatCard({
         className='hover:bg-border/40 absolute top-0 right-0 h-full w-2 cursor-ew-resize rounded-r-md'
       />
     </Card>
+  )
+}
+
+function ActionCards() {
+  const items = [
+    {
+      title: 'Générer un devis',
+      icon: FileText,
+      bgColor: 'hsla(166, 76%, 97%, 0.4)',
+      iconColor: 'hsla(167, 85%, 89%, 1)',
+    },
+    {
+      title: 'Générer un docs',
+      icon: PdfIcon,
+      bgColor: 'hsla(0, 73%, 88%, 0.2)',
+      iconColor: 'hsla(0, 94%, 82%, 1)',
+    },
+    {
+      title: 'Import CSV',
+      icon: Download,
+      bgColor: 'hsla(213, 97%, 87%, 0.38)',
+      iconColor: 'hsla(213, 97%, 87%, 1)',
+    },
+  ] as const
+  return (
+    <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3'>
+      {items.map(({ title, icon: Icon, bgColor, iconColor }) => (
+        <Card
+          key={title}
+          className='transition-shadow hover:shadow-md'
+          style={{ backgroundColor: bgColor }}
+        >
+          <CardContent className='flex flex-col items-center justify-center gap-1 px-2'>
+            <div
+              style={{
+                backgroundColor: iconColor,
+              }}
+              className='grid size-10 place-content-center rounded-full text-black'
+            >
+              <Icon className='size-5' />
+            </div>
+            <div className='text-center text-xs font-medium'>{title}</div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+function RecentActivityTable() {
+  const rows = [
+    {
+      name: 'Guy Hawkins',
+      activity: 'Ajout d’un commentaire',
+      color: 'green',
+      date: 'Jul 13, 2023',
+    },
+    {
+      name: 'Kathryn Murphy',
+      activity: 'Modification du lead',
+      color: 'blue',
+      date: 'Jul 13, 2023',
+    },
+    {
+      name: 'Courtney Henry',
+      activity: 'Ajout de document dans un devis',
+      color: 'green',
+      date: 'Jul 13, 2023',
+    },
+    {
+      name: 'Floyd Miles',
+      activity: 'lead supprimé',
+      color: 'red',
+      date: 'Jul 13, 2023',
+    },
+    {
+      name: 'Albert Flores',
+      activity: 'Création du lead',
+      color: 'green',
+      date: 'Jul 13, 2023',
+    },
+  ] as const
+
+  const badgeClass = (c: string) =>
+    c === 'green' ? 'bg-green-600' : c === 'blue' ? 'bg-blue-400' : 'bg-red-400'
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className='bg-muted text-card-foreground text-md text-center'>
+          <TableHead className='text-center'>Leads / Clients</TableHead>
+          <TableHead className='text-center'>Activité</TableHead>
+          <TableHead className='text-center'>Date de l’activité</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((r) => (
+          <TableRow key={`${r.name}-${r.activity}`}>
+            <TableCell className='font-semibold'>{r.name}</TableCell>
+            <TableCell className='text-center font-semibold'>
+              <Badge className={`${badgeClass(r.color)} text-white`}>
+                {r.activity}
+              </Badge>
+            </TableCell>
+            <TableCell className='text-center font-medium text-gray-500'>
+              {r.date}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+function LeadsClientsTable() {
+  const rows = Array.from({ length: 9 }).map(() => ({
+    id: `728—418633928`,
+    category: 'Renovation d’ampleur',
+    name: 'bari alexneder',
+    status: 'LEAD',
+    dept: '77\n(77600)',
+    phone: '0687945635\n0687945635',
+    created: 'Jul 13, 2023',
+  }))
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>N de dossier</TableHead>
+          <TableHead>Catégorie</TableHead>
+          <TableHead>Nom et Prénom</TableHead>
+          <TableHead>Etat</TableHead>
+          <TableHead>Département / Province</TableHead>
+          <TableHead>Téléphone / fixe</TableHead>
+          <TableHead>Date de création</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((r, idx) => (
+          <TableRow key={`${r.id}-${idx}`}>
+            <TableCell>{r.id}</TableCell>
+            <TableCell className='min-w-48'>{r.category}</TableCell>
+            <TableCell className='min-w-40 capitalize'>{r.name}</TableCell>
+            <TableCell>
+              <Badge className='rounded-full bg-green-100 px-2 text-green-700'>
+                {r.status}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <div className='leading-tight'>77</div>
+              <div className='text-muted-foreground text-xs'>(77600)</div>
+            </TableCell>
+            <TableCell>
+              <div className='leading-tight'>0687945635</div>
+              <div className='text-muted-foreground text-xs'>0687945635</div>
+            </TableCell>
+            <TableCell>{r.created}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
