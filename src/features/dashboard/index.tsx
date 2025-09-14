@@ -9,6 +9,7 @@ import {
   FileText,
   MoreHorizontal,
   Move,
+  Pencil,
   Plus,
   UserRoundCheck,
   Users,
@@ -16,6 +17,21 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,6 +43,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import {
   Table,
   TableBody,
@@ -84,10 +110,7 @@ export default function Dashboard() {
         <div className='flex items-center justify-between space-y-2'>
           <h1 className='text-2xl font-bold tracking-tight'>Table de bord</h1>
           <div className='flex items-center space-x-2'>
-            <Button>
-              <Plus className='h-4 w-4' />
-              Add lead
-            </Button>
+            <AddLeadDialog />
           </div>
         </div>
         <div className='flex items-center justify-end'>
@@ -194,6 +217,429 @@ function labelFor(id: MetricId) {
     case 'conversion-rate':
       return 'Taux de conversion'
   }
+}
+
+function AddLeadDialog() {
+  const [open, setOpen] = useState(false)
+  const [s1Open, setS1Open] = useState(true)
+  const [s2Open, setS2Open] = useState(false)
+  const [s1Done, setS1Done] = useState(false)
+  const [s2Done, setS2Done] = useState(false)
+  const progress = (Number(s1Done) + Number(s2Done)) * 50
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className='mr-2 h-4 w-4' /> Ajouter un lead
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='max-h-[90vh] max-w-5xl min-w-[95vw] overflow-y-auto p-0'>
+        <DialogHeader className='bg-background sticky top-0 z-10 border-b px-6 pt-5 pb-4'>
+          <div className='flex items-start justify-between'>
+            <div>
+              <DialogTitle>Ajouter un Lead</DialogTitle>
+              <DialogDescription className='sr-only'>
+                Créer un nouveau lead
+              </DialogDescription>
+            </div>
+          </div>
+          <div className='mt-4'>
+            <div className='mb-1 flex items-center justify-between text-sm'>
+              <span className='text-muted-foreground'>Progression</span>
+              <span className='font-medium'>{progress}%</span>
+            </div>
+            <div className='bg-muted h-2 w-full rounded-full'>
+              <div
+                className='h-2 rounded-full bg-emerald-500 transition-all'
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className='space-y-4 px-6 py-4'>
+          {/* Section 1 */}
+          <Collapsible open={s1Open} onOpenChange={setS1Open}>
+            <CollapsibleTrigger asChild>
+              <button
+                type='button'
+                className='bg-card hover:bg-accent flex w-full items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-medium'
+              >
+                <span>Informations Générales & Client</span>
+                <ChevronDown
+                  className={`size-4 transition-transform ${s1Open ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              {/* Section helper description */}
+              <div className='text-muted-foreground mt-2 flex items-center gap-2 text-sm'>
+                <Pencil className='size-3.5' />
+                <span>Tout ce qui concerne le lead et les coordonnées du client</span>
+              </div>
+
+              <div className='mt-3 grid grid-cols-1 gap-4 md:grid-cols-2'>
+                {/* Détails du lead */}
+                <div className='rounded-lg border p-4'>
+                  <div className='mb-3 font-medium'>Détails du lead</div>
+                  <div className='grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3'>
+                    {/* Row 1 */}
+                    <div>
+                      <Label className='mb-1 block'>Source du lead</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='reference'>Référence</SelectItem>
+                          <SelectItem value='siteweb'>Site web</SelectItem>
+                          <SelectItem value='appel'>Appel</SelectItem>
+                          <SelectItem value='autre'>Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Catégories</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='renovation'>Rénovation</SelectItem>
+                          <SelectItem value='isolation'>Isolation</SelectItem>
+                          <SelectItem value='solaire'>Solaire</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Date de lead</Label>
+                      <Input type='date' />
+                    </div>
+
+                    {/* Row 2 */}
+                    <div>
+                      <Label className='mb-1 block'>Statut du lead</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='qualifie'>Qualifié</SelectItem>
+                          <SelectItem value='nouveau'>Nouveau</SelectItem>
+                          <SelectItem value='a-contacter'>À contacter</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Assigné à (utilisateur)</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='mohamed'>Mohamed</SelectItem>
+                          <SelectItem value='youssef'>Youssef</SelectItem>
+                          <SelectItem value='amine'>Amine</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Confirmateur</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='manager1'>Manager 1</SelectItem>
+                          <SelectItem value='manager2'>Manager 2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Row 3 */}
+                    <div>
+                      <Label className='mb-1 block'>Installateur</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='karim'>karim</SelectItem>
+                          <SelectItem value='ahmed'>ahmed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>État MaPrimeRénov</Label>
+                      <Input placeholder='En attente' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Financement</Label>
+                      <Input placeholder='Type / Détails' />
+                    </div>
+
+                    {/* Row 4 */}
+                    <div>
+                      <Label className='mb-1 block'>Date et heure de rappel</Label>
+                      <Input type='datetime-local' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Date de pose souhaitée</Label>
+                      <Input type='date' />
+                    </div>
+
+                    {/* Row 5 */}
+                    <div className='lg:col-span-3 md:col-span-2'>
+                      <Label className='mb-1 block'>Commentaire</Label>
+                      <Input placeholder='Commentaire' />
+                    </div>
+                  </div>
+                  <div className='bg-muted/40 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-md p-3'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-muted-foreground text-sm'>
+                        Contrôle de la qualité effectué
+                      </span>
+                      <div className='flex items-center gap-2'>
+                        <Switch defaultChecked />
+                        <span className='text-emerald-600 text-xs'>Active</span>
+                      </div>
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-muted-foreground text-sm'>
+                        Archiver
+                      </span>
+                      <div className='flex items-center gap-2'>
+                        <Switch defaultChecked />
+                        <span className='text-emerald-600 text-xs'>Active</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Identité du client */}
+                <div className='rounded-lg border p-4'>
+                  <div className='mb-3 font-medium'>Identité du Client</div>
+                  <div className='grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4'>
+                    {/* Row 1 */}
+                    <div>
+                      <Label className='mb-1 block'>Civilité</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='madame'>Madame</SelectItem>
+                          <SelectItem value='monsieur'>Monsieur</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Nom</Label>
+                      <Input placeholder='Nom' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Prénom</Label>
+                      <Input placeholder='Prénom' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Date de naissance</Label>
+                      <Input type='date' />
+                    </div>
+
+                    {/* Row 2 */}
+                    <div>
+                      <Label className='mb-1 block'>Département de naissance</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='75'>75 - Paris</SelectItem>
+                          <SelectItem value='93'>93 - Seine-Saint-Denis</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Ville de naissance</Label>
+                      <Input placeholder='Paris' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Pays de naissance</Label>
+                      <Input placeholder='France' />
+                    </div>
+                    <div />
+
+                    {/* Row 3 */}
+                    <div>
+                      <Label className='mb-1 block'>Téléphone portable</Label>
+                      <Input placeholder='06 XX XX XX XX' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Téléphone fixe</Label>
+                      <Input placeholder='01 XX XX XX XX' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Email</Label>
+                      <Input type='email' placeholder='email@exemple.com' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Code postal</Label>
+                      <Input placeholder='75000' />
+                    </div>
+
+                    {/* Row 4 */}
+                    <div className='lg:col-span-4 md:col-span-2'>
+                      <Label className='mb-1 block'>Adresse</Label>
+                      <Input placeholder='Adresse complète' />
+                    </div>
+
+                    {/* Row 5 */}
+                    <div>
+                      <Label className='mb-1 block'>Ville</Label>
+                      <Input placeholder='Paris' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Département</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='93'>93 - Seine-Saint-Denis</SelectItem>
+                          <SelectItem value='75'>75 - Paris</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Pays</Label>
+                      <Input placeholder='France' />
+                    </div>
+                    <div />
+                  </div>
+                </div>
+              </div>
+
+              <div className='mt-4 flex items-center justify-end gap-3'>
+                <Switch
+                  id='s1done'
+                  checked={s1Done}
+                  onCheckedChange={setS1Done}
+                />
+                <Label
+                  htmlFor='s1done'
+                  className='text-muted-foreground text-sm'
+                >
+                  Marquer comme terminé
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Section 2 */}
+          <Collapsible open={s2Open} onOpenChange={setS2Open}>
+            <CollapsibleTrigger asChild>
+              <button
+                type='button'
+                className='bg-card hover:bg-accent flex w-full items-center justify-between rounded-md border px-4 py-3 text-left text-sm font-medium'
+              >
+                <span>Projet & Informations Techniques</span>
+                <ChevronDown
+                  className={`size-4 transition-transform ${s2Open ? 'rotate-180' : ''}`}
+                />
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className='mt-3 grid grid-cols-1 gap-4 md:grid-cols-2'>
+                <div className='rounded-lg border p-4'>
+                  <div className='mb-3 font-medium'>Avis d’imposition</div>
+                  <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                    <div>
+                      <Label className='mb-1 block'>Numéro fiscal 1</Label>
+                      <Input placeholder='Numéro fiscal' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Revenu fiscal 1</Label>
+                      <Input placeholder='Revenu fiscal' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Ville</Label>
+                      <Input placeholder='Ville' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Code postal</Label>
+                      <Input placeholder='Code postal' />
+                    </div>
+                  </div>
+                </div>
+                <div className='rounded-lg border p-4'>
+                  <div className='mb-3 font-medium'>Informations logement</div>
+                  <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+                    <div>
+                      <Label className='mb-1 block'>Type de logement</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Sélectionner' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='maison'>Maison</SelectItem>
+                          <SelectItem value='appartement'>
+                            Appartement
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Nombre de pièces</Label>
+                      <Input placeholder='Nombre' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>Surface (m²)</Label>
+                      <Input placeholder='Surface' />
+                    </div>
+                    <div>
+                      <Label className='mb-1 block'>
+                        Année de construction
+                      </Label>
+                      <Input placeholder='Année' />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='mt-4 flex items-center justify-end gap-3'>
+                <Switch
+                  id='s2done'
+                  checked={s2Done}
+                  onCheckedChange={setS2Done}
+                />
+                <Label
+                  htmlFor='s2done'
+                  className='text-muted-foreground text-sm'
+                >
+                  Marquer comme terminé
+                </Label>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+
+        <DialogFooter className='bg-background sticky bottom-0 z-10 mt-2 gap-2 border-t px-6 py-4 sm:justify-between'>
+          <div className='flex flex-1 items-center gap-2'>
+            <Button variant='outline'>Enregistrer comme brouillon</Button>
+          </div>
+          <div className='flex items-center gap-2'>
+            <DialogClose asChild>
+              <Button variant='outline'>Annuler</Button>
+            </DialogClose>
+            <Button className='bg-emerald-600 text-white hover:bg-emerald-600/90'>
+              + Ajouter un lead
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 function StatCard({

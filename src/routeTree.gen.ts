@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ClerkRouteRouteImport } from './routes/clerk/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedRecentActivitiesRouteImport } from './routes/_authenticated/recent-activities'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
@@ -54,6 +55,12 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecentActivitiesRoute =
+  AuthenticatedRecentActivitiesRouteImport.update({
+    id: '/recent-activities',
+    path: '/recent-activities',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
   path: '/503',
@@ -136,9 +143,9 @@ const AuthenticatedSettingsIndexRoute =
   } as any)
 const AuthenticatedRecentActivitiesIndexRoute =
   AuthenticatedRecentActivitiesIndexRouteImport.update({
-    id: '/recent-activities/',
-    path: '/recent-activities/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedRecentActivitiesRoute,
   } as any)
 const AuthenticatedHelpCenterIndexRoute =
   AuthenticatedHelpCenterIndexRouteImport.update({
@@ -211,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/recent-activities': typeof AuthenticatedRecentActivitiesRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -222,7 +230,7 @@ export interface FileRoutesByFullPath {
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/recent-activities': typeof AuthenticatedRecentActivitiesIndexRoute
+  '/recent-activities/': typeof AuthenticatedRecentActivitiesIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/_authenticated/recent-activities': typeof AuthenticatedRecentActivitiesRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/recent-activities'
     | '/'
     | '/settings/account'
     | '/settings/appearance'
@@ -315,7 +325,7 @@ export interface FileRouteTypes {
     | '/apps'
     | '/chats'
     | '/help-center'
-    | '/recent-activities'
+    | '/recent-activities/'
     | '/settings/'
     | '/tasks'
     | '/users'
@@ -364,6 +374,7 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/_authenticated/recent-activities'
     | '/_authenticated/'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -417,6 +428,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recent-activities': {
+      id: '/_authenticated/recent-activities'
+      path: '/recent-activities'
+      fullPath: '/recent-activities'
+      preLoaderRoute: typeof AuthenticatedRecentActivitiesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(errors)/503': {
@@ -533,10 +551,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/recent-activities/': {
       id: '/_authenticated/recent-activities/'
-      path: '/recent-activities'
-      fullPath: '/recent-activities'
+      path: '/'
+      fullPath: '/recent-activities/'
       preLoaderRoute: typeof AuthenticatedRecentActivitiesIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedRecentActivitiesRoute
     }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
@@ -634,25 +652,40 @@ const AuthenticatedSettingsRouteRouteWithChildren =
     AuthenticatedSettingsRouteRouteChildren,
   )
 
+interface AuthenticatedRecentActivitiesRouteChildren {
+  AuthenticatedRecentActivitiesIndexRoute: typeof AuthenticatedRecentActivitiesIndexRoute
+}
+
+const AuthenticatedRecentActivitiesRouteChildren: AuthenticatedRecentActivitiesRouteChildren =
+  {
+    AuthenticatedRecentActivitiesIndexRoute:
+      AuthenticatedRecentActivitiesIndexRoute,
+  }
+
+const AuthenticatedRecentActivitiesRouteWithChildren =
+  AuthenticatedRecentActivitiesRoute._addFileChildren(
+    AuthenticatedRecentActivitiesRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
+  AuthenticatedRecentActivitiesRoute: typeof AuthenticatedRecentActivitiesRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
-  AuthenticatedRecentActivitiesIndexRoute: typeof AuthenticatedRecentActivitiesIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
+  AuthenticatedRecentActivitiesRoute:
+    AuthenticatedRecentActivitiesRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
-  AuthenticatedRecentActivitiesIndexRoute:
-    AuthenticatedRecentActivitiesIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
 }
