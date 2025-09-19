@@ -32,6 +32,8 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { FilterDialog } from './filter-dialog'
+import type { Criterion } from './filter-dialog-core'
 import {
   Select,
   SelectContent,
@@ -94,6 +96,23 @@ function DataTableViewOptions<TData>({ table }: { table: TableType<TData> }) {
 
 function DataTableToolbar<TData>({ table }: { table: TableType<TData> }) {
   const isFiltered = table.getState().columnFilters.length > 0
+  const [filterDialogOpen, setFilterDialogOpen] = React.useState(false)
+  const [criteria, setCriteria] = React.useState<Criterion[]>([])
+
+  function applyCriteria() {
+    // Map criteria to column filters; simple contains matching
+    const mapped: ColumnFiltersState = criteria
+      .filter((c) => c.field && c.value.trim() !== '')
+      .map((c) => ({ id: c.field!, value: c.value }))
+    table.setColumnFilters(mapped)
+    setFilterDialogOpen(false)
+  }
+
+  function clearAllCriteria() {
+    setCriteria([])
+    table.resetColumnFilters()
+  }
+
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
@@ -114,19 +133,38 @@ function DataTableToolbar<TData>({ table }: { table: TableType<TData> }) {
           }}
           className='h-8 w-[150px] lg:w-[250px]'
         />
-        <div className='flex gap-x-2' />
-        {isFiltered && (
+        <div className='flex gap-x-2'>
           <Button
-            variant='ghost'
-            onClick={() => table.resetColumnFilters()}
-            className='h-8 px-2 lg:px-3'
+            variant='outline'
+            size='sm'
+            className='h-8'
+            onClick={() => setFilterDialogOpen(true)}
           >
-            Reset
-            <Cross2Icon className='ml-2 h-4 w-4' />
+            Filtre
           </Button>
-        )}
+          {isFiltered && (
+            <Button
+              variant='ghost'
+              onClick={() => table.resetColumnFilters()}
+              className='h-8 px-2 lg:px-3'
+            >
+              Reset
+              <Cross2Icon className='ml-2 h-4 w-4' />
+            </Button>
+          )}
+        </div>
       </div>
-      <DataTableViewOptions table={table} />
+      <div className='flex items-center gap-2'>
+        <DataTableViewOptions table={table} />
+      </div>
+      <FilterDialog
+        open={filterDialogOpen}
+        onOpenChange={setFilterDialogOpen}
+        criteria={criteria}
+        setCriteria={setCriteria}
+        onApply={applyCriteria}
+        onClearAll={clearAllCriteria}
+      />
     </div>
   )
 }
